@@ -1,6 +1,10 @@
 package core
 
-import "fmt"
+import (
+	"fmt"
+	"io"
+	"os"
+)
 
 // Multiline version of Stringer
 type StringerMl interface {
@@ -9,7 +13,11 @@ type StringerMl interface {
 }
 
 func DisplayMultiline(obj StringerMl, params ...interface{}) {
+	FdisplayMultiline(os.Stdout, obj, params...)
+}
+
+func FdisplayMultiline(writer io.Writer, obj StringerMl, params ...interface{}) {
 	for _,line := range obj.StringMl(params...) {
-		fmt.Println(line)
+		fmt.Fprintln(writer, line)
 	}
 }
