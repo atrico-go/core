@@ -5,6 +5,9 @@ import (
 	"time"
 )
 
+// Synchronisation event
+// Event can be set or reset
+// Wait will block until event is set
 type Event interface {
 	// Set the event
 	// returns true if event was set (i.e. wasn't already set)
@@ -17,17 +20,22 @@ type Event interface {
 }
 
 func NewEvent(initialValue bool) Event {
-	ev := event{set: initialValue}
-	if !initialValue {
-		ev.wg.Add(1)
-	}
-	return &ev
+	return newEvent(false, initialValue)
 }
 
+func NewAutoResetEvent(initialValue bool) Event {
+	return newEvent(true, initialValue)
+}
+
+// ----------------------------------------------------------------------------------------------------------------------------
+// Implementation
+// ----------------------------------------------------------------------------------------------------------------------------
+
 type event struct {
-	set   bool
-	mutex sync.Mutex
-	wg    sync.WaitGroup
+	autoReset   bool
+	set         bool
+	accessMutex sync.Mutex
+	waitMutex   sync.Mutex
 }
 
 func (e *event) Set() bool {
@@ -38,21 +46,33 @@ func (e *event) Reset() bool {
 	return e.changeState(false)
 }
 
+func (e *event) Wait(timeout time.Duration) bool {
+	result := LockWithTimeout(&e.waitMutex, timeout)
+	if result && !e.autoReset {
+		e.waitMutex.Unlock()
+	}
+	return result
+}
+
+func newEvent(autoReset, initialValue bool) Event {
+	ev := event{autoReset: autoReset, set: initialValue}
+	if !initialValue {
+		ev.waitMutex.Lock()
+	}
+	return &ev
+}
+
 func (e *event) changeState(set bool) bool {
-	e.mutex.Lock()
-	defer e.mutex.Unlock()
+	e.accessMutex.Lock()
+	defer e.accessMutex.Unlock()
 	if e.set != set {
 		e.set = set
 		if set {
-			e.wg.Done()
+			e.waitMutex.Unlock()
 		} else {
-			e.wg.Add(1)
+			e.waitMutex.Lock()
 		}
 		return true
 	}
 	return false
-}
-
-func (e *event) Wait(timeout time.Duration) bool {
-	return WaitWithTimeout(&e.wg, timeout)
 }

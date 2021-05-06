@@ -9,76 +9,164 @@ import (
 	"github.com/atrico-go/testing/is"
 )
 
-func Test_Event_InitiallySet(t *testing.T) {
+var timeout = 250 * time.Millisecond
+
+func Test_Event_ManualInitiallySet(t *testing.T) {
 	// Arrange
 	event := syncEx.NewEvent(true)
 
 	// Act
-	result := event.Wait(time.Second)
+	result1 := event.Wait(timeout)
+	result2 := event.Wait(timeout)
 
 	// Assert
-	Assert(t).That(result, is.True, "Event set")
+	Assert(t).That(result1, is.True, "1st Event set")
+	Assert(t).That(result2, is.True, "2nd Event set")
 }
 
-func Test_Event_InitiallySetThenSet(t *testing.T) {
+func Test_Event_ManualInitiallySetThenSet(t *testing.T) {
 	// Arrange
 	event := syncEx.NewEvent(true)
 
 	// Act
 	set := event.Set()
-	result := event.Wait(time.Second)
+	result1 := event.Wait(timeout)
+	result2 := event.Wait(timeout)
 
 	// Assert
 	Assert(t).That(set, is.False, "Set no change")
-	Assert(t).That(result, is.True, "Event set")
+	Assert(t).That(result1, is.True, "1st Event set")
+	Assert(t).That(result2, is.True, "2nd Event set")
 }
 
-func Test_Event_InitiallySetThenReset(t *testing.T) {
+func Test_Event_ManualInitiallySetThenReset(t *testing.T) {
 	// Arrange
 	event := syncEx.NewEvent(true)
 
 	// Act
 	reset := event.Reset()
-	result := event.Wait(time.Second)
+	result1 := event.Wait(timeout)
 
 	// Assert
 	Assert(t).That(reset, is.True, "Reset change")
-	Assert(t).That(result, is.False, "Event reset")
+	Assert(t).That(result1, is.False, "1st Event reset")
 }
 
-func Test_Event_InitiallyReset(t *testing.T) {
+func Test_Event_ManualInitiallyReset(t *testing.T) {
 	// Arrange
 	event := syncEx.NewEvent(false)
 
 	// Act
-	result := event.Wait(time.Second)
+	result1 := event.Wait(timeout)
 
 	// Assert
-	Assert(t).That(result, is.False, "Event reset")
+	Assert(t).That(result1, is.False, "1st Event reset")
 }
 
-func Test_Event_InitiallyResetThenSet(t *testing.T) {
+func Test_Event_ManualInitiallyResetThenSet(t *testing.T) {
 	// Arrange
 	event := syncEx.NewEvent(false)
 
 	// Act
 	set := event.Set()
-	result := event.Wait(time.Second)
+	result1 := event.Wait(timeout)
+	result2 := event.Wait(timeout)
 
 	// Assert
 	Assert(t).That(set, is.True, "Set change")
-	Assert(t).That(result, is.True, "Event set")
+	Assert(t).That(result1, is.True, "1st Event set")
+	Assert(t).That(result2, is.True, "2nd Event set")
 }
 
-func Test_Event_InitiallyResetThenReset(t *testing.T) {
+func Test_Event_ManualInitiallyResetThenReset(t *testing.T) {
 	// Arrange
 	event := syncEx.NewEvent(false)
 
 	// Act
 	reset := event.Reset()
-	result := event.Wait(time.Second)
+	result1 := event.Wait(timeout)
 
 	// Assert
 	Assert(t).That(reset, is.False, "Reset no change")
-	Assert(t).That(result, is.False, "Event reset")
+	Assert(t).That(result1, is.False, "1st Event reset")
+}
+
+func Test_Event_AutoInitiallySet(t *testing.T) {
+	// Arrange
+	event := syncEx.NewAutoResetEvent(true)
+
+	// Act
+	result1 := event.Wait(timeout)
+	result2 := event.Wait(timeout)
+
+	// Assert
+	Assert(t).That(result1, is.True, "1st Event set")
+	Assert(t).That(result2, is.False, "2nd Event reset")
+}
+
+func Test_Event_AutoInitiallySetThenSet(t *testing.T) {
+	// Arrange
+	event := syncEx.NewAutoResetEvent(true)
+
+	// Act
+	set := event.Set()
+	result1 := event.Wait(timeout)
+	result2 := event.Wait(timeout)
+
+	// Assert
+	Assert(t).That(set, is.False, "Set no change")
+	Assert(t).That(result1, is.True, "1st Event set")
+	Assert(t).That(result2, is.False, "2nd Event reset")
+}
+
+func Test_Event_AutoInitiallySetThenReset(t *testing.T) {
+	// Arrange
+	event := syncEx.NewAutoResetEvent(true)
+
+	// Act
+	reset := event.Reset()
+	result1 := event.Wait(timeout)
+
+	// Assert
+	Assert(t).That(reset, is.True, "Reset change")
+	Assert(t).That(result1, is.False, "1st Event reset")
+}
+
+func Test_Event_AutoInitiallyReset(t *testing.T) {
+	// Arrange
+	event := syncEx.NewAutoResetEvent(false)
+
+	// Act
+	result1 := event.Wait(timeout)
+
+	// Assert
+	Assert(t).That(result1, is.False, "1st Event reset")
+}
+
+func Test_Event_AutoInitiallyResetThenSet(t *testing.T) {
+	// Arrange
+	event := syncEx.NewAutoResetEvent(false)
+
+	// Act
+	set := event.Set()
+	result1 := event.Wait(timeout)
+	result2 := event.Wait(timeout)
+
+	// Assert
+	Assert(t).That(set, is.True, "Set change")
+	Assert(t).That(result1, is.True, "1st Event set")
+	Assert(t).That(result2, is.False, "2nd Event reset")
+}
+
+func Test_Event_AutoInitiallyResetThenReset(t *testing.T) {
+	// Arrange
+	event := syncEx.NewAutoResetEvent(false)
+
+	// Act
+	reset := event.Reset()
+	result1 := event.Wait(timeout)
+
+	// Assert
+	Assert(t).That(reset, is.False, "Reset no change")
+	Assert(t).That(result1, is.False, "1st Event reset")
 }
