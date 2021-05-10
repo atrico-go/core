@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Tests" type="GoTestRunConfiguration" factoryName="Go Test">
+  <configuration default="false" name="Semaphore Tests" type="GoTestRunConfiguration" factoryName="Go Test">
     <module name="core" />
     <working_directory value="$PROJECT_DIR$" />
     <kind value="DIRECTORY" />
@@ -7,6 +7,7 @@
     <directory value="$PROJECT_DIR$/unit-tests" />
     <filePath value="$PROJECT_DIR$" />
     <framework value="gotest" />
+    <pattern value="^Test_Semaphore_" />
     <method v="2" />
   </configuration>
 </component>
