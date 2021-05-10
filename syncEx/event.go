@@ -8,50 +8,26 @@ import (
 // Synchronisation event
 // Event can be set or reset
 // Wait will block until event is set
-type Event interface {
-	// Set the event
-	// returns true if event was set (i.e. wasn't already set)
-	Set() bool
-	// Reset the event
-	// returns true if event was reset (i.e. wasn't already reset)
-	Reset() bool
-	// Set or Reset event based on parameter
-	// returns true if event state was changed
-	SetValue(value bool) bool
-	// Wait until event is set
-	Wait(timeout time.Duration) bool
-}
-
-func NewEvent(initialValue bool) Event {
-	return newEvent(false, initialValue)
-}
-
-func NewAutoResetEvent(initialValue bool) Event {
-	return newEvent(true, initialValue)
-}
-
-// ----------------------------------------------------------------------------------------------------------------------------
-// Implementation
-// ----------------------------------------------------------------------------------------------------------------------------
-
-type event struct {
-	autoReset   bool
+type Event struct {
+	AutoReset   bool
 	set         bool
 	accessMutex sync.Mutex
 	waitMutex   sync.Mutex
+	init		sync.Once
 }
 
-func (e *event) Set() bool {
+func (e *Event) Set() bool {
 	return e.SetValue(true)
 }
 
-func (e *event) Reset() bool {
+func (e *Event) Reset() bool {
 	return e.SetValue(false)
 }
 
-func (e *event) SetValue(value bool) bool {
+func (e *Event) SetValue(value bool) bool {
 	e.accessMutex.Lock()
 	defer e.accessMutex.Unlock()
+	e.initialise()
 	if e.set != value {
 		e.set = value
 		if value {
@@ -64,20 +40,17 @@ func (e *event) SetValue(value bool) bool {
 	return false
 }
 
-func (e *event) Wait(timeout time.Duration) bool {
+func (e *Event) Wait(timeout time.Duration) bool {
+	e.accessMutex.Lock()
+	e.initialise()
+	e.accessMutex.Unlock()
 	result := LockWithTimeout(&e.waitMutex, timeout)
-	if result && !e.autoReset {
+	if result && !e.AutoReset {
 		e.waitMutex.Unlock()
 	}
 	return result
 }
 
-func newEvent(autoReset, initialValue bool) Event {
-	ev := event{autoReset: autoReset, set: initialValue}
-	if !initialValue {
-		ev.waitMutex.Lock()
-	}
-	return &ev
+func (e *Event) initialise() {
+	e.init.Do(e.waitMutex.Lock)  // Initially locked (event not set)
 }
-
-

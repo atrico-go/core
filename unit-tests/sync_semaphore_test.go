@@ -10,7 +10,7 @@ import (
 
 func Test_Semaphore(t *testing.T) {
 	// Arrange
-	semaphore := syncEx.NewSemaphore(2)
+	semaphore := syncEx.Semaphore{Limit:2}
 
 	// Act
 	result1 := semaphore.Wait(timeout)
@@ -25,7 +25,7 @@ func Test_Semaphore(t *testing.T) {
 
 func Test_Semaphore_Release(t *testing.T) {
 	// Arrange
-	semaphore := syncEx.NewSemaphore(2)
+	semaphore := syncEx.Semaphore{Limit:2}
 
 	// Act
 	result1 := semaphore.Wait(timeout)
@@ -43,7 +43,7 @@ func Test_Semaphore_Release(t *testing.T) {
 
 func Test_Semaphore_Status(t *testing.T) {
 	// Arrange
-	semaphore := syncEx.NewSemaphore(2)
+	semaphore := syncEx.Semaphore{Limit:2}
 	var current [6]int
 	var limit [6]int
 
