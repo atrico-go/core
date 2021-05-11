@@ -1,12 +1,12 @@
 package syncEx
 
 import (
-	"time"
+	"context"
 )
 
 // An object that can be waited on
 type Waitable interface {
-	// Wait on this object with a timeout
-	// returns true if wait returned or false if timeout
-	Wait(timeout time.Duration) bool
+	// Wait on this object with a context
+	// returns nil if wait returned or error if cancelled/timeout
+	Wait(ctx context.Context) error
 }

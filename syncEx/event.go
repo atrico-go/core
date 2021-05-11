@@ -1,8 +1,8 @@
 package syncEx
 
 import (
+	"context"
 	"sync"
-	"time"
 )
 
 // Synchronisation event
@@ -40,15 +40,15 @@ func (e *Event) SetValue(value bool) bool {
 	return false
 }
 
-func (e *Event) Wait(timeout time.Duration) bool {
+func (e *Event) Wait(ctx context.Context) error {
 	e.accessMutex.Lock()
 	e.initialise()
 	e.accessMutex.Unlock()
-	result := LockWithTimeout(&e.waitMutex, timeout)
-	if result && !e.AutoReset {
+	err := LockWithContext(&e.waitMutex, ctx)
+	if err == nil && !e.AutoReset {
 		e.waitMutex.Unlock()
 	}
-	return result
+	return err
 }
 
 func (e *Event) initialise() {

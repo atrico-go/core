@@ -1,8 +1,8 @@
 package syncEx
 
 import (
+	"context"
 	"sync"
-	"time"
 )
 
 // Semaphore synchronisation object
@@ -16,9 +16,9 @@ type Semaphore struct {
 	waitMutex   sync.Mutex
 }
 
-func (s *Semaphore) Wait(timeout time.Duration) bool {
-	result := LockWithTimeout(&s.waitMutex, timeout)
-	if result {
+func (s *Semaphore) Wait(ctx context.Context) error {
+	err := LockWithContext(&s.waitMutex, ctx)
+	if err == nil {
 		s.accessMutex.Lock()
 		defer s.accessMutex.Unlock()
 		s.current++
@@ -26,7 +26,7 @@ func (s *Semaphore) Wait(timeout time.Duration) bool {
 			s.waitMutex.Unlock()
 		}
 	}
-	return result
+	return err
 }
 
 func (s *Semaphore) Release() {

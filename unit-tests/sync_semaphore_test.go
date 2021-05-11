@@ -1,6 +1,7 @@
 package unit_tests
 
 import (
+	"context"
 	"testing"
 
 	"github.com/atrico-go/core/syncEx"
@@ -13,14 +14,14 @@ func Test_Semaphore(t *testing.T) {
 	semaphore := syncEx.Semaphore{Limit:2}
 
 	// Act
-	result1 := semaphore.Wait(timeout)
-	result2 := semaphore.Wait(timeout)
-	result3 := semaphore.Wait(timeout)
+	result1 := semaphore.Wait(createContext())
+	result2 := semaphore.Wait(createContext())
+	result3 := semaphore.Wait(createContext())
 
 	// Assert
-	Assert(t).That(result1, is.True, "1st Wait ok")
-	Assert(t).That(result2, is.True, "2nd Wait ok")
-	Assert(t).That(result3, is.False, "3rd Wait timeout")
+	Assert(t).That(result1, is.Nil, "1st Wait ok")
+	Assert(t).That(result2, is.Nil, "2nd Wait ok")
+	Assert(t).That(result3, is.EqualTo(context.DeadlineExceeded), "3rd Wait timeout")
 }
 
 func Test_Semaphore_Release(t *testing.T) {
@@ -28,17 +29,17 @@ func Test_Semaphore_Release(t *testing.T) {
 	semaphore := syncEx.Semaphore{Limit:2}
 
 	// Act
-	result1 := semaphore.Wait(timeout)
-	result2 := semaphore.Wait(timeout)
+	result1 := semaphore.Wait(createContext())
+	result2 := semaphore.Wait(createContext())
 	semaphore.Release()
-	result3 := semaphore.Wait(timeout)
-	result4 := semaphore.Wait(timeout)
+	result3 := semaphore.Wait(createContext())
+	result4 := semaphore.Wait(createContext())
 
 	// Assert
-	Assert(t).That(result1, is.True, "1st Wait ok")
-	Assert(t).That(result2, is.True, "2nd Wait ok")
-	Assert(t).That(result3, is.True, "3rd Wait ok")
-	Assert(t).That(result4, is.False, "4th Wait timeout")
+	Assert(t).That(result1, is.Nil, "1st Wait ok")
+	Assert(t).That(result2, is.Nil, "2nd Wait ok")
+	Assert(t).That(result3, is.Nil, "3rd Wait ok")
+	Assert(t).That(result4, is.EqualTo(context.DeadlineExceeded), "4th Wait timeout")
 }
 
 func Test_Semaphore_Status(t *testing.T) {
@@ -49,11 +50,11 @@ func Test_Semaphore_Status(t *testing.T) {
 
 	// Act
 	current[0], limit[0] = semaphore.Status()
-	semaphore.Wait(timeout)
+	semaphore.Wait(createContext())
 	current[1], limit[1] = semaphore.Status()
-	semaphore.Wait(timeout)
+	semaphore.Wait(createContext())
 	current[2], limit[2] = semaphore.Status()
-	semaphore.Wait(timeout)
+	semaphore.Wait(createContext())
 	current[3], limit[3] = semaphore.Status()
 	semaphore.Release()
 	current[4], limit[4] = semaphore.Status()
