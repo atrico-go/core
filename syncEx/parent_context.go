@@ -27,6 +27,7 @@ func MakeParentContext(base context.Context) (ctx ParentContext, cancel context.
 }
 
 func (c *ParentContext) WithTimeout(timeout time.Duration) (ctx context.Context) {
-	ctx,_ = context.WithTimeout(c, timeout)
+	//goland:noinspection GoVetLostCancel
+	ctx, _ = context.WithTimeout(c, timeout)
 	return ctx
 }

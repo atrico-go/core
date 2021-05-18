@@ -17,7 +17,7 @@ func DisplayMultiline(obj StringerMl, params ...interface{}) {
 }
 
 func FdisplayMultiline(writer io.Writer, obj StringerMl, params ...interface{}) {
-	for _,line := range obj.StringMl(params...) {
+	for _, line := range obj.StringMl(params...) {
 		fmt.Fprintln(writer, line)
 	}
 }

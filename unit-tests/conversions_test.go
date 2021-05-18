@@ -33,7 +33,7 @@ func Test_Conversion_ConvertSlice_StringToInterface(t *testing.T) {
 func Test_Conversion_ConvertSlice_InterfaceToInt(t *testing.T) {
 	// Arrange
 	var output []int
-	input := []interface{} {
+	input := []interface{}{
 		rg.Int(),
 		rg.Int(),
 		rg.Int(),

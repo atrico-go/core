@@ -11,7 +11,7 @@ import (
 
 func Test_Semaphore(t *testing.T) {
 	// Arrange
-	semaphore := syncEx.Semaphore{Limit:2}
+	semaphore := syncEx.Semaphore{Limit: 2}
 
 	// Act
 	result1 := semaphore.Wait(createContext())
@@ -26,7 +26,7 @@ func Test_Semaphore(t *testing.T) {
 
 func Test_Semaphore_Release(t *testing.T) {
 	// Arrange
-	semaphore := syncEx.Semaphore{Limit:2}
+	semaphore := syncEx.Semaphore{Limit: 2}
 
 	// Act
 	result1 := semaphore.Wait(createContext())
@@ -44,7 +44,7 @@ func Test_Semaphore_Release(t *testing.T) {
 
 func Test_Semaphore_Status(t *testing.T) {
 	// Arrange
-	semaphore := syncEx.Semaphore{Limit:2}
+	semaphore := syncEx.Semaphore{Limit: 2}
 	var current [6]int
 	var limit [6]int
 
@@ -68,7 +68,7 @@ func Test_Semaphore_Status(t *testing.T) {
 	Assert(t).That(current[3], is.EqualTo(2), "After 2 waits, 1 timeout")
 	Assert(t).That(current[4], is.EqualTo(1), "After 2 waits, 1 release")
 	Assert(t).That(current[5], is.EqualTo(0), "After 2 waits, 2 releases")
-	for i,lim := range limit {
+	for i, lim := range limit {
 		Assert(t).That(lim, is.EqualTo(2), "Limit %d", i)
 	}
 }

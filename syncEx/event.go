@@ -13,7 +13,7 @@ type Event struct {
 	set         bool
 	accessMutex sync.Mutex
 	waitMutex   sync.Mutex
-	init		sync.Once
+	init        sync.Once
 }
 
 func (e *Event) Set() bool {
@@ -52,5 +52,5 @@ func (e *Event) Wait(ctx context.Context) error {
 }
 
 func (e *Event) initialise() {
-	e.init.Do(e.waitMutex.Lock)  // Initially locked (event not set)
+	e.init.Do(e.waitMutex.Lock) // Initially locked (event not set)
 }

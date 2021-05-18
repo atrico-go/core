@@ -7,14 +7,14 @@ import (
 const MinValue = -MaxValue - 1
 const MaxValue = int(uintEx.MaxValue >> 1)
 
-func Min(i,j int) int {
+func Min(i, j int) int {
 	if i < j {
 		return i
 	}
 	return j
 }
 
-func Max(i,j int) int {
+func Max(i, j int) int {
 	if i > j {
 		return i
 	}
