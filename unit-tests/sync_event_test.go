@@ -14,9 +14,11 @@ func Test_Event_ManualInitiallyReset(t *testing.T) {
 	event := syncEx.Event{}
 
 	// Act
+	status1 := event.IsSet()
 	result1 := event.Wait(createContext())
 
 	// Assert
+	Assert(t).That(status1, is.False, "1st IsSet not set")
 	Assert(t).That(result1, is.EqualTo(context.DeadlineExceeded), "1st Event reset")
 }
 
@@ -26,12 +28,16 @@ func Test_Event_ManualInitiallyResetThenSet(t *testing.T) {
 
 	// Act
 	set := event.Set()
+	status1 := event.IsSet()
 	result1 := event.Wait(createContext())
+	status2 := event.IsSet()
 	result2 := event.Wait(createContext())
 
 	// Assert
 	Assert(t).That(set, is.True, "Set change")
+	Assert(t).That(status1, is.True, "1st IsSet set")
 	Assert(t).That(result1, is.Nil, "1st Event set")
+	Assert(t).That(status2, is.True, "2nd IsSet set")
 	Assert(t).That(result2, is.Nil, "2nd Event set")
 }
 
@@ -40,11 +46,15 @@ func Test_Event_ManualInitiallyResetThenReset(t *testing.T) {
 	event := syncEx.Event{}
 
 	// Act
+	status1 := event.IsSet()
 	reset := event.Reset()
+	status2 := event.IsSet()
 	result1 := event.Wait(createContext())
 
 	// Assert
+	Assert(t).That(status1, is.False, "1st IsSet not set")
 	Assert(t).That(reset, is.False, "Reset no change")
+	Assert(t).That(status2, is.False, "2nd IsSet not set")
 	Assert(t).That(result1, is.EqualTo(context.DeadlineExceeded), "1st Event reset")
 }
 
@@ -54,11 +64,15 @@ func Test_Event_ManualInitiallySet(t *testing.T) {
 	event.Set()
 
 	// Act
+	status1 := event.IsSet()
 	result1 := event.Wait(createContext())
+	status2 := event.IsSet()
 	result2 := event.Wait(createContext())
 
 	// Assert
+	Assert(t).That(status1, is.True, "1st IsSet set")
 	Assert(t).That(result1, is.Nil, "1st Event set")
+	Assert(t).That(status2, is.True, "2nd IsSet set")
 	Assert(t).That(result2, is.Nil, "2nd Event set")
 }
 

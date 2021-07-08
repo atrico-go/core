@@ -16,6 +16,10 @@ type Event struct {
 	init        sync.Once
 }
 
+func (e Event) IsSet() bool {
+	return e.set
+}
+
 func (e *Event) Set() bool {
 	return e.SetValue(true)
 }
